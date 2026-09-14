@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:health/health.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// Health data state
 class HealthData {
@@ -49,6 +50,11 @@ class HealthData {
 class HealthService {
   final Health _health = Health();
 
+  /// iOS never reveals whether READ permission was granted (hasPermissions
+  /// returns null for read types by design), so we remember a successful
+  /// authorization ourselves.
+  static const _connectedKey = 'health_connected';
+
   /// Data types we want to read
   List<HealthDataType> get _readTypes => [
         HealthDataType.STEPS,
@@ -92,6 +98,10 @@ class HealthService {
         permissions: [...permissions, ...writePermissions],
       );
 
+      if (granted) {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setBool(_connectedKey, true);
+      }
       return granted;
     } catch (e) {
       debugPrint('Health authorization error: $e');
@@ -99,13 +109,25 @@ class HealthService {
     }
   }
 
-  /// Check if we have authorization
+  /// Forget the stored connection (used by disconnect).
+  Future<void> clearConnected() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_connectedKey);
+  }
+
+  /// Check if we have authorization. Only an explicit `false` from the
+  /// platform counts as denied; `null` (iOS read types) falls back to the
+  /// stored flag from the last successful authorization.
   Future<bool> hasAuthorization() async {
     if (!isAvailable) return false;
 
     try {
       await _health.configure();
-      return await _health.hasPermissions(_readTypes) ?? false;
+      final has = await _health.hasPermissions(_readTypes);
+      if (has == false) return false;
+      if (has == true) return true;
+      final prefs = await SharedPreferences.getInstance();
+      return prefs.getBool(_connectedKey) ?? false;
     } catch (e) {
       debugPrint('Health permission check error: $e');
       return false;
@@ -292,7 +314,16 @@ final healthDataProvider = StateNotifierProvider<HealthDataNotifier, HealthData>
 class HealthDataNotifier extends StateNotifier<HealthData> {
   final HealthService _service;
 
-  HealthDataNotifier(this._service) : super(const HealthData());
+  HealthDataNotifier(this._service) : super(const HealthData()) {
+    _init();
+  }
+
+  /// Restore the connection on startup if we were connected before.
+  Future<void> _init() async {
+    if (await _service.hasAuthorization()) {
+      await refresh();
+    }
+  }
 
   /// Connect to health app
   Future<bool> connect() async {
@@ -306,8 +337,9 @@ class HealthDataNotifier extends StateNotifier<HealthData> {
     }
   }
 
-  /// Disconnect (just clears local state)
-  void disconnect() {
+  /// Disconnect: forget the stored connection and clear local state.
+  Future<void> disconnect() async {
+    await _service.clearConnected();
     state = const HealthData();
   }
 
