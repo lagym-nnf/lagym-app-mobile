@@ -1,0 +1,102 @@
+name: la_gym_app
+description: LA GYM - Empowering Women Through Fitness
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.2.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Supabase
+  supabase_flutter: ^2.8.0
+
+  # State Management
+  flutter_riverpod: ^2.6.1
+  riverpod_annotation: ^2.6.1
+
+  # Navigation
+  go_router: ^14.8.1
+
+  # Data Serialization
+  freezed_annotation: ^2.4.4
+  json_annotation: ^4.9.0
+
+  # UI/UX
+  google_fonts: ^6.2.1
+  flutter_svg: ^2.0.17
+  cached_network_image: ^3.4.1
+  shimmer: ^3.0.0
+
+  # Icons
+  phosphor_flutter: ^2.1.0
+
+  # Utilities
+  intl: any
+  shared_preferences: ^2.3.5
+  flutter_secure_storage: ^9.2.4
+
+  # Image handling
+  image_picker: ^1.1.2
+
+  # Video Player (for Mux)
+  video_player: ^2.9.3
+  chewie: ^1.8.5
+
+  # YouTube Player
+  youtube_player_flutter: ^9.0.1
+
+  # Loading indicators
+  flutter_spinkit: ^5.2.1
+
+  # Health Integration
+  health: ^10.2.0
+  permission_handler: ^11.3.1
+
+  # Push Notifications
+  firebase_core: ^3.8.1
+  firebase_messaging: ^15.1.5
+  flutter_local_notifications: ^18.0.1
+
+  # Env variables
+  flutter_dotenv: ^5.2.1
+
+  # Payments (Stripe for shop, RevenueCat for subscriptions)
+  flutter_stripe: ^11.0.0
+  purchases_flutter: ^8.0.0
+  dio: ^5.4.0
+  url_launcher: ^6.2.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+  # Code Generation
+  build_runner: ^2.4.15
+  freezed: ^2.5.7
+  json_serializable: ^6.9.4
+  riverpod_generator: ^2.6.4
+
+  # App Icon Generator
+  flutter_launcher_icons: ^0.14.3
+
+# App Icon Configuration
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon.png"
+  min_sdk_android: 21
+  adaptive_icon_background: "#000000"
+  adaptive_icon_foreground: "assets/icon.png"
+  remove_alpha_ios: true
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+    - assets/icons/
+    - .env
