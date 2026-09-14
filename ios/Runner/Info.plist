@@ -37,6 +37,10 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSHealthShareUsageDescription</key>
+	<string>LA GYM reads your steps, weight, active energy and workouts from Apple Health to show your daily activity and track your fitness progress in the app.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>LA GYM saves your logged weight and completed workouts to Apple Health so your fitness data stays in one place.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
